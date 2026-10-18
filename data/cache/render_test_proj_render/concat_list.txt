@@ -1,0 +1,2 @@
+file 'd:/Antigravity.google/ShortsStudio/data/cache/render_test_proj_render/scene_001.mp4'
+file 'd:/Antigravity.google/ShortsStudio/data/cache/render_test_proj_render/scene_002.mp4'
