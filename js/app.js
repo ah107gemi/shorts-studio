@@ -3,10 +3,18 @@
 // ============================================
 
 // --- API Helper ---
-const API_BASE = '/api/v1';
+export function getApiBase() {
+    const custom = localStorage.getItem('shorts_studio_backend_url');
+    if (custom) return custom.replace(/\/+$/, '');
+    if (window.location.hostname.includes('github.io')) {
+        return 'http://localhost:8000/api/v1';
+    }
+    return '/api/v1';
+}
 
 export async function api(endpoint, options = {}) {
-    const url = `${API_BASE}${endpoint}`;
+    const base = getApiBase();
+    const url = `${base}${endpoint}`;
     const config = {
         headers: { 'Content-Type': 'application/json', ...options.headers },
         ...options,
@@ -29,7 +37,7 @@ export async function api(endpoint, options = {}) {
         return data;
     } catch (err) {
         if (err.name === 'TypeError' && err.message.includes('fetch')) {
-            throw new Error('Cannot reach the server. Is the backend running?');
+            throw new Error(`Cannot reach the server at ${base}. Ensure local backend is running (http://localhost:8000).`);
         }
         throw err;
     }
@@ -193,7 +201,8 @@ async function loadPage(pageName) {
 
     try {
         if (!pageModules[pageName]) {
-            pageModules[pageName] = await import(`/js/pages/${pageName}.js`);
+            const pageUrl = new URL(`./pages/${pageName}.js`, import.meta.url).href;
+            pageModules[pageName] = await import(pageUrl);
         }
         const mod = pageModules[pageName];
         container.innerHTML = await mod.render();
